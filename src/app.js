@@ -14,6 +14,9 @@ import { productViewRouter } from './routes/productsView.router.js'
 import { productsAPIRouter } from './routes/productsAPI.router.js'
 import { authRouter } from './routes/auth.router.js'
 import { __dirname } from './utils/__dirname.js'
+import swaggerJSDoc from 'swagger-jsdoc'
+import swaggerUiExpress from 'swagger-ui-express'
+import { swaggerOptions } from './utils/swagger.js'
 import { connectMongo, connectSocketServer } from './utils/utils.js'
 import { iniPassPortLocalAndGithub } from './config/passport.config.js'
 import { cartViewRouter } from './routes/cartView.router.js'
@@ -57,6 +60,9 @@ connectSocketServer(httpServer)
 // Connect Mongo
 connectMongo()
 
+// Config Swagger
+const specs = swaggerJSDoc(swaggerOptions)
+
 // Rutes: API REST WITH JSON
 app.use('/api/products', productsAPIRouter)
 app.use('/api/carts', cartsAPIRouter)
@@ -75,6 +81,9 @@ app.use('/chat', chatRouter)
 
 // Error Handler
 app.use(errorHandler)
+
+// DOCS
+app.use('/apidocs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs))
 
 app.get('*', (req, res) => {
   return res.status(404).json({
